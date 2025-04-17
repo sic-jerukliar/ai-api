@@ -15,58 +15,6 @@ def check_antispoofing(img_path):
     
     return False
 
-def VerifyFaceByBase64(base64_img, studId):
-    identity_image_path = f'identityimage/{studId}'
-    
-    # Decode base64 menjadi image
-    decoded_img = base64.b64decode(base64_img)
-    receive_image = Image.open(BytesIO(decoded_img))
-    print(receive_image)
-    receive_image_path = "temp_received_image.jpg"
-    receive_image.save(receive_image_path)
-
-    # Loop semua gambar referensi
-    for image_filename in os.listdir(identity_image_path):
-        img2_path = os.path.join(identity_image_path, image_filename)
-        try:
-            print(receive_image_path)
-            result = DeepFace.verify(
-                img1_path=receive_image_path,
-                img2_path=img2_path,
-                enforce_detection=False
-            )
-            if result['verified']:
-                return True
-        except Exception as e:
-            print(f"Error comparing to {img2_path}: {e}")
-            raise e
-    
-    return False  # Tidak ada wajah yang cocok
-
-def VerifyFaceByImage(uploaded_img, studId):
-    identity_image_path = f'identityimage/{studId}'
-
-    # Simpan file upload ke file sementara
-    receive_image = Image.open(uploaded_img)
-    receive_image_path = "temp_received_image.jpg"
-    receive_image.save(receive_image_path)
-
-    # Loop semua gambar referensi
-    for image_filename in os.listdir(identity_image_path):
-        img2_path = os.path.join(identity_image_path, image_filename)
-        try:
-            result = DeepFace.verify(
-                img1_path=receive_image_path,
-                img2_path=img2_path,
-                enforce_detection=False,
-            )
-            if result['verified']:
-                os.remove(receive_image_path)
-                return True
-        except Exception as e:
-            print(f"Error comparing to {img2_path}: {e}")
-            raise e
-        
 def RecognizeFace(uploaded_img, studId, trehsohld=0.75):
     receive_image_path = "temp_received_image.jpg"
     embedfile = f"identityimage/{studId}/{studId}.pkl"
