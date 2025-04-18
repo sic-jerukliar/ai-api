@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, send_from_directory, render_template_string
-from utils import VerifyFaceByImage, VerifyFaceByBase64, RecognizeFace
+from utils import RecognizeFace
 import os
 from datetime import datetime
 
@@ -37,36 +37,6 @@ def gallery():
 def serve_image(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
-@app.route('/image/verifystudents', methods=['POST'])
-def verifybyImage():
-    try:
-        base64_img = request.files.get('img')
-        stud_id = request.form.get('studId')
-
-        if not base64_img or not stud_id:
-            return jsonify({"error": "Missing 'img' or 'studId'"}), 400
-
-        result = VerifyFaceByImage(base64_img, stud_id)
-        return jsonify({"verified": result}), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/baseimage/verifystudents', methods=['POST'])
-def verifybyBase64():
-    try:
-        base64_img = request.files.get('img')
-        stud_id = request.form.get('studId')
-
-        if not base64_img or not stud_id:
-            return jsonify({"error": "Missing 'img' or 'studId'"}), 400
-
-        result = VerifyFaceByBase64(base64_img, stud_id)
-        return jsonify({"verified": result}), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
 @app.route('/verifystudents', methods=['POST'])
 def verify():
     now = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -83,6 +53,11 @@ def verify():
     result = RecognizeFace(uploaded_img, stud_id)
     print(result)
     return jsonify({"verified": result}), 200
+
+# TUGAS IJAL
+# bikin api endpoint atau fungsi yang ngedetsi kalo udah tgl ex. 1
+# kirim recap ke gmail orang tua
+# bikin model user = [nama, rfid, gmail orang tua]
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
