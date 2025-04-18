@@ -46,8 +46,6 @@ def RecognizeFace(uploaded_img, studId, trehsohld=0.75):
         encodeImage = DeepFace.represent(
             receive_image_path,
             enforce_detection=False
-            # model_name="Facenet",
-            # detector_backend="mtcnn",
         )
         encodeImage = encodeImage[0]["embedding"]
         
