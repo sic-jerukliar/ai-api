@@ -7,6 +7,8 @@ import cv2 as cv
 import numpy as np
 from scipy.spatial import distance
 from pickle import load
+import psycopg2
+from dotenv import load_dotenv
 
 def check_antispoofing(img_path):
     result = DeepFace.extract_faces(img_path)
@@ -59,3 +61,31 @@ def RecognizeFace(uploaded_img, studId, trehsohld=0.75):
         os.remove(receive_image_path)
     
     return False
+
+def connect_db():
+    load_dotenv()
+    try:
+        conn = psycopg2.connect(
+            host=os.getenv("DB_HOST"),
+            database=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            port=int(os.getenv("DB_PORT")),
+            sslmode='require'
+        )
+        return conn
+    except psycopg2.Error as e:
+        print(f"Error connecting to PostgreSQL database: {e}")
+        return None
+
+def get_table_data(table_name, column_names):
+    conn = connect_db()
+    cur = conn.cursor()
+    try:
+        columns = ", ".join(column_names)
+        cur.execute(f"SELECT {columns} FROM {table_name}")
+        rows = cur.fetchall()
+        return [dict(zip(column_names, row)) for row in rows]
+    finally:
+        cur.close()
+        conn.close()
