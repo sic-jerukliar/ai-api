@@ -37,6 +37,18 @@ def gallery():
 def serve_image(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
+@app.route('/show')
+def show_image():
+    files = os.listdir(UPLOAD_FOLDER)
+    # Filter hanya file gambar
+    image_files = [f for f in files if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
+
+    if not image_files:
+        return jsonify({"error": "No image found"}), 404
+
+    latest_image = sorted(image_files)[-1]
+    return send_from_directory(UPLOAD_FOLDER, latest_image)
+
 @app.route('/verifystudents', methods=['POST'])
 def verify():
     now = datetime.now().strftime("%Y%m%d_%H%M%S")
