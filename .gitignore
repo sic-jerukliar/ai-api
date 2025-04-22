@@ -174,3 +174,5 @@ cython_debug/
 .pypirc
 
 *.ipynb
+
+temp_received_image.jpg
